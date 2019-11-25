@@ -140,7 +140,7 @@ class Dora:
   def __getattr__(self,g):
     if g in self.CUSTOMS:
       return self.CUSTOMS[g]
-    return object.__getattr__(self,g)
+    return object.__getattribute__(self,g)
   
   def _ipython_display_(self, **kwargs):
     from IPython.display import HTML,display
