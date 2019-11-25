@@ -143,4 +143,4 @@ class Dora:
     return object.__getattr__(self,g)
   
   def __repr__(self):
-    return self.data
+    return repr(self.data)
