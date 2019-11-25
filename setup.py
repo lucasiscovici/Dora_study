@@ -1,7 +1,7 @@
 from setuptools import setup
 
 setup(
-  name = "Dora",
+  name = "Dora_study",
   version = "0.0.2",
   author = "Nathan Epstein",
   author_email = "ne2210@columbia.edu",
@@ -15,5 +15,5 @@ setup(
     "scipy>=0.17.0",
     "sklearn",
   ],
-  packages = ['Dora']
+  packages = ['Dora_study']
 )
