@@ -142,6 +142,6 @@ class Dora:
       return self.CUSTOMS[g]
     return object.__getattr__(self,g)
   
-  def _ipython_display_(self):
-    from IPython.display import HTML
-    return HTML(self.data._repr_html_())
+  def _ipython_display_(self, **kwargs):
+    from IPython.display import HTML,display
+    display(HTML(self.data._repr_html_()))
