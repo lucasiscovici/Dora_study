@@ -4,12 +4,21 @@ import numpy as np
 import matplotlib.pyplot as plt
 from sklearn import preprocessing
 from sklearn.feature_extraction import DictVectorizer
+from functools import wraps
+import inspect
 
-class customFunc:
-  def __init__(self,f):
-    self.f=f
-  def __call__(self,*args,**xargs):
-    self.f(*args,**xargs
+def addCustomFunc(func):
+  @wraps
+  def with_logging(*args, **kwargs):
+        rep=func(*args, **kwargs)
+        self=args[0]
+        frame = inspect.currentframe()
+        argss, _, _, values = inspect.getargvalues(frame)
+        o=[values[i] for i in argss]
+        self._log( "{}()".format( func.__name__, ",".join(o) ) )
+        return rep
+  return with_logging
+  
     
 class Dora:
   CUSTOMS={}
@@ -17,7 +26,7 @@ class Dora:
   @classmethod
   def addCustomFunction(cls,func,fn=None):
     fn = func.__name__ if fn is None else fn
-    cls.CUSTOMS[fn]=func
+    cls.CUSTOMS[fn]=addCustomFunc(func)
     
   def __init__(self, data = None, output = None):
     self.snapshots = {}
@@ -130,4 +139,5 @@ class Dora:
 
   def __getattr__(self,g):
     if g in self.CUSTOMS:
-      
+      return self.CUSTOMS[g]
+    return object.__getattr__(self,g)
