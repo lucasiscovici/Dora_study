@@ -141,3 +141,6 @@ class Dora:
     if g in self.CUSTOMS:
       return self.CUSTOMS[g]
     return object.__getattr__(self,g)
+  
+  def __repr__(self):
+    return self.data
