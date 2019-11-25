@@ -5,12 +5,26 @@ import matplotlib.pyplot as plt
 from sklearn import preprocessing
 from sklearn.feature_extraction import DictVectorizer
 
+class customFunc:
+  def __init__(self,f):
+    self.f=f
+  def __call__(self,*args,**xargs):
+    self.f(*args,**xargs
+    
 class Dora:
+  CUSTOMS={}
+  
+  @classmethod
+  def addCustomFunction(cls,func,fn=None):
+    fn = func.__name__ if fn is None else fn
+    cls.CUSTOMS[fn]=func
+    
   def __init__(self, data = None, output = None):
     self.snapshots = {}
     self.logs = []
     self.configure(data = data, output = output)
 
+  
   def configure(self, data = None, output = None):
     if (type(output) is str or type(output) is int):
       self.output = output
@@ -113,3 +127,7 @@ class Dora:
 
   def _log(self, string):
     self.logs.append(string)
+
+  def __getattr__(self,g):
+    if g in self.CUSTOMS:
+      
