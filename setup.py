@@ -15,5 +15,5 @@ setup(
     "scipy>=0.17.0",
     "sklearn",
   ],
-  packages = ['Dora_study']
+  packages = ['dora_study']
 )
