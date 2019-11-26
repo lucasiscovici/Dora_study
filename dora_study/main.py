@@ -57,7 +57,7 @@ class Dora:
   
     
   def __init__(self, data = None, output = None):
-    self.init(data = data, output = output)
+    self._init(data = data, output = output)
 
   def init(self,data,output):
     self._snapshots = {}
@@ -67,9 +67,9 @@ class Dora:
     self._lastlast=None
     self._lastlastlogs=None
 
-    self.configure(data = data, output = output)
+    self._configure(data = data, output = output)
 
-  def configure(self, data = None, output = None):
+  def _configure(self, data = None, output = None):
     if (type(output) is str or type(output) is int):
       self._output = output
     if (type(data) is str):
