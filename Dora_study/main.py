@@ -8,32 +8,34 @@ from functools import wraps
 import inspect
 from functools import wraps
 
-def saveLast(func,selfo=None):
+
+def saveLast_(self,func,*args,**kwargs):
+  self._last=self._data.copy()
+  self._lastlogs=self._logs.copy()
+
+  self._lastlast=self._last.copy()
+  self._lastlastlogs=self._lastlogs.copy()
+
+  force=kwargs.pop("force",None)
+
+  rep=func(self,*args, **kwargs)
+
+  argss= inspect.getcallargs(func,self, *args, **kwargs)
+  del argss["self"]
+  argss=["{}={}".format(i,"\""+j+"\"" if isinstance(j,str) else j) for i,j in argss.items()]
+  self._log( "self.{}({})".format( func.__name__, ", ".join(argss) ) ,force=force)
+  return rep
+
+def saveLast(func):
   @wraps(func)
   def with_logging(self,*args, **kwargs):
-
-      self._last=self._data.copy()
-      self._lastlogs=self._logs.copy()
-
-      self._lastlast=self._last.copy()
-      self._lastlastlogs=self._lastlogs.copy()
-
-      force=kwargs.pop("force",None)
-
-      rep=func(self,*args, **kwargs)
-
-      argss= inspect.getcallargs(func,self, *args, **kwargs)
-      del argss["self"]
-      argss=["{}={}".format(i,"\""+j+"\"" if isinstance(j,str) else j) for i,j in argss.items()]
-      self._log( "self.{}({})".format( func.__name__, ", ".join(argss) ) ,force=force)
-
-      return rep
+      return saveLast_(self,func,*args,**kwargs)
   return with_logging
   
 def addCustomFunc2(self,func):
   @wraps(func)
   def with_logging(*args, **kwargs):
-      return saveLast(func)(self,*args,**kwargs)
+      return saveLast_(self,func,*args,**kwargs)
       # self._last=self._data.copy()
       # self._lastlogs=self._logs.copy()
       
