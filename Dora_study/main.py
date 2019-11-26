@@ -10,11 +10,11 @@ from functools import wraps
 def saveLast(func):
   @wraps(func)
   def with_logging(self,*args, **kwargs):
-      self.last=self.data.copy()
-      self.lastlogs=self.logs.copy()
+      self._last=self._data.copy()
+      self._lastlogs=self._logs.copy()
 
-      self.lastlast=self.last.copy()
-      self.lastlastlogs=self.lastlogs.copy()
+      self._lastlast=self._last.copy()
+      self._lastlastlogs=self._lastlogs.copy()
 
       rep=func(self,*args, **kwargs)
       return rep
@@ -23,12 +23,12 @@ def saveLast(func):
 def addCustomFunc2(self,func):
   @wraps(func)
   def with_logging(*args, **kwargs):
-      self.last=self.data.copy()
-      self.lastlogs=self.logs.copy()
+      self._last=self._data.copy()
+      self._lastlogs=self._logs.copy()
       
-      self.lastlast=self.last.copy()
-      self.lastlastlogs=self.lastlogs.copy()
-      
+      self._lastlast=self._last.copy()
+      self._lastlastlogs=self._lastlogs.copy()
+
       rep=func(self,*args, **kwargs)
       argss= inspect.getcallargs(func,self, *args, **kwargs)
       del argss["self"]
@@ -38,37 +38,37 @@ def addCustomFunc2(self,func):
   return with_logging
 
 class Dora:
-  CUSTOMS={}
+  _CUSTOMS={}
   
   @classmethod
   def addCustomFunction(cls,func,fn=None):
     fn = func.__name__ if fn is None else fn
-    cls.CUSTOMS[fn]=func
+    cls._CUSTOMS[fn]=func
     
   def __init__(self, data = None, output = None):
     self.init(data = data, output = output)
 
   def init(self,data,output):
-    self.snapshots = {}
-    self.logs = []
-    self.last=None
-    self.lastlogs=None
-    self.lastlast=None
-    self.lastlastlogs=None
+    self._snapshots = {}
+    self._logs = []
+    self._last=None
+    self._lastlogs=None
+    self._lastlast=None
+    self._lastlastlogs=None
 
     self.configure(data = data, output = output)
 
   def configure(self, data = None, output = None):
     if (type(output) is str or type(output) is int):
-      self.output = output
+      self._output = output
     if (type(data) is str):
-      self.initial_data = pd.read_csv(data)
-      self.data = self.initial_data.copy()
-      self.logs = []
+      self._initial_data = pd.read_csv(data)
+      self._data = self._initial_data.copy()
+      self._logs = []
     if (type(data) is pd.DataFrame):
-      self.initial_data = data
-      self.data = self.initial_data.copy()
-      self.logs = []
+      self._initial_data = data
+      self._data = self._initial_data.copy()
+      self._logs = []
 
   @saveLast
   def remove_feature(self, feature_name):
@@ -77,27 +77,27 @@ class Dora:
 
   @saveLast
   def extract_feature(self, old_feat, new_feat, mapper):
-    new_feature_column = map(mapper, self.data[old_feat])
-    self.data[new_feat] = list(new_feature_column)
+    new_feature_column = map(mapper, self.data_[old_feat])
+    self._data[new_feat] = list(new_feature_column)
     self._log("self.extract_feature({0}, {1}, {2})".format(old_feat, new_feat, mapper))
 
   @saveLast
   def impute_missing_values(self):
-    column_names = self.input_columns()
+    column_names = self._input_columns()
     imp = preprocessing.Imputer()
-    imp.fit(self.data[column_names])
-    self.data[column_names] = imp.transform(self.data[column_names])
+    imp.fit(self._data[column_names])
+    self._data[column_names] = imp.transform(self._data[column_names])
     self._log("self.impute_missing_values()")
 
   @saveLast
   def scale_input_values(self):
-    column_names = self.input_columns()
-    self.data[column_names] = preprocessing.scale(self.data[column_names])
+    column_names = self.i_nput_columns()
+    self._data[column_names] = preprocessing.scale(self._data[column_names])
     self._log("self.scale_input_values()")
 
   @saveLast
   def extract_ordinal_feature(self, feature_name):
-    feature = self.data[feature_name]
+    feature = self._data[feature_name]
     feature_dictionaries = map(
       lambda x: { str(feature_name): str(x) },
       feature
@@ -106,69 +106,69 @@ class Dora:
     one_hot_matrix = vec.fit_transform(feature_dictionaries).toarray()
     one_hot_matrix = pd.DataFrame(one_hot_matrix)
     one_hot_matrix.columns = vec.get_feature_names()
-    self.data = pd.concat(
+    self._data = pd.concat(
       [
-        self.data,
+        self._data,
         one_hot_matrix
       ],
       axis = 1
     )
-    del self.data[feature_name]
+    del self._data[feature_name]
     self._log("self.extract_ordinal_feature('{0}')".format(feature_name))
 
   def set_training_and_validation(self):
-    training_rows = np.random.rand(len(self.data)) < 0.8
-    self.training_data = self.data[training_rows]
-    self.validation_data = self.data[~training_rows]
+    training_rows = np.random.rand(len(self._data)) < 0.8
+    self.training_data = self._data[training_rows]
+    self.validation_data = self._data[~training_rows]
 
   def plot_feature(self, feature_name):
-    x = self.data[feature_name]
-    y = self.data[self.output]
+    x = self._data[feature_name]
+    y = self._data[self._output]
     fit = np.polyfit(x, y, deg = 1)
     fig, ax = plt.subplots()
     ax.plot(x, fit[1] + fit[0] * x)
     ax.scatter(x, y)
-    ax.set_title("{0} vs. {1}".format(feature_name, self.output))
+    ax.set_title("{0} vs. {1}".format(feature_name, self._output))
     fig.show()
 
   def input_columns(self):
-    column_names = list(self.data.columns)
-    column_names.remove(self.output)
+    column_names = list(self._data.columns)
+    column_names.remove(self._output)
     return column_names
 
   def explore(self):
-    features = self.input_columns()
+    features = self._input_columns()
     row_count = math.floor(math.sqrt(len(features)))
     col_count = math.ceil(len(features) / row_count)
     figure = plt.figure(1)
 
     for index, feature in enumerate(features):
       figure.add_subplot(row_count, col_count, index + 1)
-      x = self.data[feature]
-      y = self.data[self.output]
+      x = self._data[feature]
+      y = self._data[self.output]
       fit = np.polyfit(x, y, deg = 1)
       plt.plot(x, fit[0] * x + fit[1])
       plt.scatter(x, y)
-      plt.title("{0} vs. {1}".format(feature, self.output))
+      plt.title("{0} vs. {1}".format(feature, self._output))
     plt.show()
 
   def snapshot(self, name):
     snapshot = {
-      "data": self.data.copy(),
-      "logs": self.logs.copy()
+      "data": self._data.copy(),
+      "logs": self._logs.copy()
     }
-    self.snapshots[name] = snapshot
+    self._snapshots[name] = snapshot
 
   def use_snapshot(self, name):
-    self.data = self.snapshots[name]["data"]
-    self.logs = self.snapshots[name]["logs"]
+    self._data = self._snapshots[name]["data"]
+    self._logs = self._snapshots[name]["logs"]
 
   def _log(self, string):
-    self.logs.append(string)
+    self._logs.append(string)
 
   def __getattr__(self,g):
-    if g in self.CUSTOMS:
-      return addCustomFunc2(self,self.CUSTOMS[g])
+    if g in self._CUSTOMS:
+      return addCustomFunc2(self,self._CUSTOMS[g])
     return object.__getattribute__(self,g)
   
   def _ipython_display_(self, **kwargs):
@@ -176,28 +176,28 @@ class Dora:
     display(HTML(self.data._repr_html_()))
 
   def back_initial_data(self):
-    self.init(self.initial_data,self.output)
+    self.init(self._initial_data,self._output)
 
   def back_one(self):
-    self.data=self.last.copy()
-    self.logs=self.lastlogs.copy()
-    self.last=self.lastlast.copy()
-    self.lastlogs=self.lastlastlogs.copy()
+    self._data=self._last.copy()
+    self._logs=self._lastlogs.copy()
+    self._last=self._lastlast.copy()
+    self._lastlogs=self._lastlastlogs.copy()
 
   def __dir__(self):
-    return list(self.CUSTOMS.keys())+super().__dir__()
+    return list(self._CUSTOMS.keys())+[i for i in super().__dir__() if not i.startswith("_")]
 
   @saveLast
   def as_cat(self,li):
     import collections.abc
     li = li if isinstance(li,collections.abc.Iterable) and not isinstance(li,str) else [li]
     #print(li)
-    self.data[li]=self.data[li].apply(lambda a:namesEscape(a.values),axis=0).astype("category")
+    self._data[li]=self._data[li].apply(lambda a:namesEscape(a.values),axis=0).astype("category")
   
   @saveLast
   def as_int(self,li):
     import collections.abc
     li = li if isinstance(li,collections.abc.Iterable) and not isinstance(li,str) else [li]
-    self.data[li]=self.data[li].apply(lambda a:unNamesEscape(a.values),axis=0)
+    self._data[li]=self._data[li].apply(lambda a:unNamesEscape(a.values),axis=0)
     # self.snapshots=self.lastsnapshots
 
