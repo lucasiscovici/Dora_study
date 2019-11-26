@@ -10,10 +10,11 @@ from functools import wraps
 def saveLast(func):
   @wraps(func)
   def with_logging(self,*args, **kwargs):
-      self.lastlast=self.last
-      self.lastlastlogs=self.lastlogs
-      self.last=self.data
-      self.lastlogs=self.logs
+      self.last=self.data.copy()
+      self.lastlogs=self.logs.copy()
+
+      self.lastlast=self.last.copy()
+      self.lastlastlogs=self.lastlogs.copy()
 
       rep=func(self,*args, **kwargs)
       return rep
@@ -22,11 +23,12 @@ def saveLast(func):
 def addCustomFunc2(self,func):
   @wraps(func)
   def with_logging(*args, **kwargs):
-      self.lastlast=self.last
-      self.lastlastlogs=self.lastlogs
-      self.last=self.data
-      self.lastlogs=self.logs
-
+      self.last=self.data.copy()
+      self.lastlogs=self.logs.copy()
+      
+      self.lastlast=self.last.copy()
+      self.lastlastlogs=self.lastlogs.copy()
+      
       rep=func(self,*args, **kwargs)
       argss= inspect.getcallargs(func,self, *args, **kwargs)
       del argss["self"]
@@ -177,12 +179,25 @@ class Dora:
     self.init(self.initial_data,self.output)
 
   def back_one(self):
-    self.data=self.last
-    self.logs=self.lastlogs
-    self.last=self.lastlast
-    self.lastlogs=self.lastlastlogs
+    self.data=self.last.copy()
+    self.logs=self.lastlogs.copy()
+    self.last=self.lastlast.copy()
+    self.lastlogs=self.lastlastlogs.copy()
 
   def __dir__(self):
     return list(self.CUSTOMS.keys())+super().__dir__()
+
+  @saveLast
+  def as_cat(self,li):
+    import collections.abc
+    li = li if isinstance(li,collections.abc.Iterable) and not isinstance(li,str) else [li]
+    #print(li)
+    self.data[li]=self.data[li].apply(lambda a:namesEscape(a.values),axis=0).astype("category")
+  
+  @saveLast
+  def as_int(self,li):
+    import collections.abc
+    li = li if isinstance(li,collections.abc.Iterable) and not isinstance(li,str) else [li]
+    self.data[li]=self.data[li].apply(lambda a:unNamesEscape(a.values),axis=0)
     # self.snapshots=self.lastsnapshots
 
