@@ -1,7 +1,7 @@
 from setuptools import setup
 
 setup(
-  name = "Dora_study",
+  name = "dora_study",
   version = "0.0.2",
   author = "Nathan Epstein",
   author_email = "ne2210@columbia.edu",
