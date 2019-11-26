@@ -201,7 +201,7 @@ class Dora:
   @classmethod
   def addCustomFunction(cls,func,fn=None):
     fn = func.__name__ if fn is None else fn
-    cls._CUSTOMS[fn]=func
+    cls._CUSTOMS[fn]=saveLast(func)
 
 
 #______JUPYTER NOTEBOOK__SPECIAL_FUNC___
