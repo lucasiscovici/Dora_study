@@ -7,6 +7,7 @@ from sklearn.feature_extraction import DictVectorizer
 from functools import wraps
 import inspect
 from functools import wraps
+
 def saveLast(func):
   @wraps(func)
   def with_logging(self,*args, **kwargs):
@@ -192,20 +193,6 @@ class Dora:
     )
     del self._data[feature_name]
     # self._log("self.extract_ordinal_feature('{0}')".format(feature_name))
-
-  @saveLast
-  def as_cat(self,li):
-    import collections.abc
-    li = li if isinstance(li,collections.abc.Iterable) and not isinstance(li,str) else [li]
-    #print(li)
-    self._data[li]=self._data[li].apply(lambda a:namesEscape(a.values),axis=0).astype("category")
-  
-  @saveLast
-  def as_int(self,li):
-    import collections.abc
-    li = li if isinstance(li,collections.abc.Iterable) and not isinstance(li,str) else [li]
-    self._data[li]=self._data[li].apply(lambda a:unNamesEscape(a.values),axis=0)
-    # self.snapshots=self.lastsnapshots
 
 
 # _______CLASSMETHOD__________
