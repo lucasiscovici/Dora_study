@@ -59,7 +59,7 @@ class Dora:
   def __init__(self, data = None, output = None):
     self._init(data = data, output = output)
 
-  def init(self,data,output):
+  def _init(self,data,output):
     self._snapshots = {}
     self._logs = []
     self._last=None
@@ -144,7 +144,7 @@ class Dora:
 
 #________________back_____________________
   def back_initial_data(self):
-    self.init(self._initial_data,self._output)
+    self._init(self._initial_data,self._output)
 
   def back_one(self):
     self._data=self._last.copy()
