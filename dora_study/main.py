@@ -8,7 +8,9 @@ from functools import wraps
 import inspect
 from functools import wraps
 
-
+def has_method(o, name):
+    return name in dir(o)
+    
 def saveLast_(self,func,*args,**kwargs):
   self._last=self._data.copy()
   self._lastlogs=self._logs.copy()
@@ -217,6 +219,7 @@ class Dora:
     return list(self._CUSTOMS.keys())+[i for i in super().__dir__() if not i.startswith("_")]+[i for i in super().__dir__() if  i.startswith("_")]
 
   def __getattr__(self,g):
+    if has_method(self,"_"+g): return getattr(self,"_"+g,None)
     if g in self._CUSTOMS:
       return addCustomFunc2(self,self._CUSTOMS[g])
     return object.__getattribute__(self,g)
