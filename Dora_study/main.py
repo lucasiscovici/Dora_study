@@ -10,7 +10,11 @@ from functools import wraps
 def saveLast(func):
   @wraps(func)
   def with_logging(self,*args, **kwargs):
+      self.lastlast=self.last
+      self.lastlastlogs=self.lastlogs
       self.last=self.data
+      self.lastlogs=self.logs
+
       rep=func(self,*args, **kwargs)
       return rep
   return with_logging
@@ -18,7 +22,11 @@ def saveLast(func):
 def addCustomFunc2(self,func):
   @wraps(func)
   def with_logging(*args, **kwargs):
+      self.lastlast=self.last
+      self.lastlastlogs=self.lastlogs
       self.last=self.data
+      self.lastlogs=self.logs
+
       rep=func(self,*args, **kwargs)
       argss= inspect.getcallargs(func,self, *args, **kwargs)
       del argss["self"]
@@ -36,12 +44,18 @@ class Dora:
     cls.CUSTOMS[fn]=func
     
   def __init__(self, data = None, output = None):
+    self.init(data = data, output = output)
+
+  def init(self,data,output):
     self.snapshots = {}
     self.logs = []
-    self.configure(data = data, output = output)
     self.last=None
+    self.lastlogs=None
+    self.lastlast=None
+    self.lastlastlogs=None
 
-  
+    self.configure(data = data, output = output)
+
   def configure(self, data = None, output = None):
     if (type(output) is str or type(output) is int):
       self.output = output
@@ -158,3 +172,14 @@ class Dora:
   def _ipython_display_(self, **kwargs):
     from IPython.display import HTML,display
     display(HTML(self.data._repr_html_()))
+
+  def back_initial_data(self):
+    self.init(self.initial_data,self.output)
+
+  def back_one(self):
+    self.data=self.last
+    self.logs=self.lastlogs
+    self.last=self.lastlast
+    self.lastlogs=self.lastlastlogs
+    # self.snapshots=self.lastsnapshots
+
