@@ -181,5 +181,8 @@ class Dora:
     self.logs=self.lastlogs
     self.last=self.lastlast
     self.lastlogs=self.lastlastlogs
+
+  def __dir__(self):
+    return list(self.CUSTOMS.keys())+super().__dir__()
     # self.snapshots=self.lastsnapshots
 
