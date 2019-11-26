@@ -7,16 +7,18 @@ from sklearn.feature_extraction import DictVectorizer
 from functools import wraps
 import inspect
 from functools import wraps
-def addCustomFunc(func):
+def saveLast(func):
   @wraps(func)
-  def with_logging(*args, **kwargs):
-        rep=func(*args, **kwargs)
-        return rep
+  def with_logging(self,*args, **kwargs):
+      self.last=self.data
+      rep=func(self,*args, **kwargs)
+      return rep
   return with_logging
   
 def addCustomFunc2(self,func):
   @wraps(func)
   def with_logging(*args, **kwargs):
+      self.last=self.data
       rep=func(self,*args, **kwargs)
       argss= inspect.getcallargs(func,self, *args, **kwargs)
       self._log( "{}()".format( func.__name__, ",".join(argss[1:]) ) )
@@ -35,6 +37,7 @@ class Dora:
     self.snapshots = {}
     self.logs = []
     self.configure(data = data, output = output)
+    self.last=None
 
   
   def configure(self, data = None, output = None):
@@ -49,15 +52,18 @@ class Dora:
       self.data = self.initial_data.copy()
       self.logs = []
 
+  @saveLast
   def remove_feature(self, feature_name):
     del self.data[feature_name]
     self._log("self.remove_feature('{0}')".format(feature_name))
 
+  @saveLast
   def extract_feature(self, old_feat, new_feat, mapper):
     new_feature_column = map(mapper, self.data[old_feat])
     self.data[new_feat] = list(new_feature_column)
     self._log("self.extract_feature({0}, {1}, {2})".format(old_feat, new_feat, mapper))
 
+  @saveLast
   def impute_missing_values(self):
     column_names = self.input_columns()
     imp = preprocessing.Imputer()
@@ -65,11 +71,13 @@ class Dora:
     self.data[column_names] = imp.transform(self.data[column_names])
     self._log("self.impute_missing_values()")
 
+  @saveLast
   def scale_input_values(self):
     column_names = self.input_columns()
     self.data[column_names] = preprocessing.scale(self.data[column_names])
     self._log("self.scale_input_values()")
 
+  @saveLast
   def extract_ordinal_feature(self, feature_name):
     feature = self.data[feature_name]
     feature_dictionaries = map(
