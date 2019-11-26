@@ -21,7 +21,9 @@ def addCustomFunc2(self,func):
       self.last=self.data
       rep=func(self,*args, **kwargs)
       argss= inspect.getcallargs(func,self, *args, **kwargs)
-      self._log( "{}()".format( func.__name__, ",".join(argss[1:]) ) )
+      del argss["self"]
+      argss=["{}={}".format(i,j) for i,j in argss.items()]
+      self._log( "{}()".format( func.__name__, ", ".join(argss) ) )
       return rep
   return with_logging
 
