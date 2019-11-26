@@ -8,9 +8,10 @@ from functools import wraps
 import inspect
 from functools import wraps
 
-def saveLast(func):
+def saveLast(func,selfo=None):
   @wraps(func)
   def with_logging(self,*args, **kwargs):
+
       self._last=self._data.copy()
       self._lastlogs=self._logs.copy()
 
@@ -32,8 +33,7 @@ def saveLast(func):
 def addCustomFunc2(self,func):
   @wraps(func)
   def with_logging(*args, **kwargs):
-
-      return saveLast(func)(*args,**kwargs)
+      return saveLast(func)(self,*args,**kwargs)
       # self._last=self._data.copy()
       # self._lastlogs=self._logs.copy()
       
@@ -201,7 +201,7 @@ class Dora:
   @classmethod
   def addCustomFunction(cls,func,fn=None):
     fn = func.__name__ if fn is None else fn
-    cls._CUSTOMS[fn]=saveLast(func)
+    cls._CUSTOMS[fn]=func
 
 
 #______JUPYTER NOTEBOOK__SPECIAL_FUNC___
