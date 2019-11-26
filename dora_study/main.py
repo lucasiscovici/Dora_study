@@ -123,7 +123,7 @@ class Dora:
 
   def _log(self, string,force=False):
     if string in self._logs and not force:
-      raise Exception("""
+      raise Exception(f"""
             _log: {string} already in logs, if you want to force, add force=True""")
     self._logs.append(string)
 
