@@ -18,8 +18,8 @@ def addCustomFunc2(self,func):
   @wraps(func)
   def with_logging(*args, **kwargs):
       rep=func(self,*args, **kwargs)
-      argss= inspect.getcallargs(func, *args, **kwargs)
-      self._log( "{}()".format( func.__name__, ",".join(argss) ) )
+      argss= inspect.getcallargs(func,self, *args, **kwargs)
+      self._log( "{}()".format( func.__name__, ",".join(argss[1:]) ) )
       return rep
   return with_logging
 
