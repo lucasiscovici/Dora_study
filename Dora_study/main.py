@@ -32,18 +32,20 @@ def saveLast(func):
 def addCustomFunc2(self,func):
   @wraps(func)
   def with_logging(*args, **kwargs):
-      self._last=self._data.copy()
-      self._lastlogs=self._logs.copy()
-      
-      self._lastlast=self._last.copy()
-      self._lastlastlogs=self._lastlogs.copy()
 
-      rep=func(self,*args, **kwargs)
-      argss= inspect.getcallargs(func,self, *args, **kwargs)
-      del argss["self"]
-      argss=["{}={}".format(i,"\""+j+"\"" if isinstance(j,str) else j) for i,j in argss.items()]
-      self._log( "self.{}({})".format( func.__name__, ", ".join(argss) ) )
-      return rep
+      return saveLast(func)(*args,**kwargs)
+      # self._last=self._data.copy()
+      # self._lastlogs=self._logs.copy()
+      
+      # self._lastlast=self._last.copy()
+      # self._lastlastlogs=self._lastlogs.copy()
+
+      # rep=func(self,*args, **kwargs)
+      # argss= inspect.getcallargs(func,self, *args, **kwargs)
+      # del argss["self"]
+      # argss=["{}={}".format(i,"\""+j+"\"" if isinstance(j,str) else j) for i,j in argss.items()]
+      # self._log( "self.{}({})".format( func.__name__, ", ".join(argss) ) )
+      # return rep
   return with_logging
 
 class Dora:
