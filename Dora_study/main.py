@@ -25,8 +25,7 @@ def addCustomFunc2(self,func):
       rep=func(self,*args, **kwargs)
       return rep
   return with_logging
-  
-Dora_study.main.addCustomFunc2=addCustomFunc2
+
 class Dora:
   CUSTOMS={}
   
