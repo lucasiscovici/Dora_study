@@ -11,11 +11,6 @@ def addCustomFunc(func):
   @wraps(func)
   def with_logging(*args, **kwargs):
         rep=func(*args, **kwargs)
-        self=args[0]
-        frame = inspect.currentframe()
-        argss, _, _, values = inspect.getargvalues(frame)
-        o=[values[i] for i in argss]
-        self._log( "{}()".format( func.__name__, ",".join(o) ) )
         return rep
   return with_logging
   
@@ -23,6 +18,8 @@ def addCustomFunc2(self,func):
   @wraps(func)
   def with_logging(*args, **kwargs):
       rep=func(self,*args, **kwargs)
+      argss= inspect.getcallargs(func, *args, **kwargs)
+      self._log( "{}()".format( func.__name__, ",".join(argss) ) )
       return rep
   return with_logging
 
@@ -32,7 +29,7 @@ class Dora:
   @classmethod
   def addCustomFunction(cls,func,fn=None):
     fn = func.__name__ if fn is None else fn
-    cls.CUSTOMS[fn]=addCustomFunc(func)
+    cls.CUSTOMS[fn]=func
     
   def __init__(self, data = None, output = None):
     self.snapshots = {}
