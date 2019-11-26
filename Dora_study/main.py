@@ -6,9 +6,9 @@ from sklearn import preprocessing
 from sklearn.feature_extraction import DictVectorizer
 from functools import wraps
 import inspect
-
+from functools import wraps
 def addCustomFunc(func):
-  @wraps
+  @wraps(func)
   def with_logging(*args, **kwargs):
         rep=func(*args, **kwargs)
         self=args[0]
@@ -19,7 +19,14 @@ def addCustomFunc(func):
         return rep
   return with_logging
   
-    
+def addCustomFunc2(self,func):
+  @wraps(func)
+  def with_logging(*args, **kwargs):
+      rep=func(self,*args, **kwargs)
+      return rep
+  return with_logging
+  
+Dora_study.main.addCustomFunc2=addCustomFunc2
 class Dora:
   CUSTOMS={}
   
@@ -139,7 +146,7 @@ class Dora:
 
   def __getattr__(self,g):
     if g in self.CUSTOMS:
-      return self.CUSTOMS[g]
+      return addCustomFunc2(self,self.CUSTOMS[g])
     return object.__getattribute__(self,g)
   
   def _ipython_display_(self, **kwargs):
