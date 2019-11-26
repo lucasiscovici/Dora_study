@@ -16,7 +16,7 @@ def saveLast(func):
       self._lastlast=self._last.copy()
       self._lastlastlogs=self._lastlogs.copy()
 
-      force=kwargs.pop("force")
+      force=kwargs.pop("force",None)
 
       rep=func(self,*args, **kwargs)
 
@@ -223,7 +223,7 @@ class Dora:
 
 #_______CLASS_______________________________
   def __dir__(self):
-    return list(self._CUSTOMS.keys())+[i for i in super().__dir__() if not i.startswith("_")]
+    return list(self._CUSTOMS.keys())+[i for i in super().__dir__() if not i.startswith("_")]+[i for i in super().__dir__() if  i.startswith("_")]
 
   def __getattr__(self,g):
     if g in self._CUSTOMS:
