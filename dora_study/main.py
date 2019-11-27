@@ -7,6 +7,7 @@ from sklearn.feature_extraction import DictVectorizer
 from functools import wraps
 import inspect
 from functools import wraps
+import types
 
 def has_method(o, name):
     return name in dir(o)
@@ -24,6 +25,7 @@ def saveLast_(self,func,*args,**kwargs):
 
   argss= inspect.getcallargs(func,self, *args, **kwargs)
   del argss["self"]
+  argss={i:(inspect.getsource(j).strip() if isinstance(j,types.LambdaType) else j) for i,j in argss.items()}
   argss=["{}={}".format(i,"\""+j+"\"" if isinstance(j,str) else j) for i,j in argss.items()]
   self._log( "self.{}({})".format( func.__name__, ", ".join(argss) ) ,force=force)
   return rep
@@ -55,7 +57,6 @@ def addCustomFunc2(self,func):
 class Dora:
   _CUSTOMS={}
   
-    
   def __init__(self, data = None, output = None):
     self._init(data = data, output = output)
 
