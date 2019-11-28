@@ -224,7 +224,8 @@ class Dora:
     return list(self._CUSTOMS.keys())+[i for i in super().__dir__() if not i.startswith("_")]+[i for i in super().__dir__() if  i.startswith("_")]
 
   def __getattr__(self,g):
-    # print(g)
+    print(g)
+    print(g.__dict__)
     # if g== '_CUSTOMS':
     #   return super().__getattribute__(g)
     if has_method(self,"_"+g): return getattr(self,"_"+g,None)
