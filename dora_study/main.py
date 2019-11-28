@@ -55,7 +55,9 @@ def addCustomFunc2(self,func):
       # self._log( "self.{}({})".format( func.__name__, ", ".join(argss) ) )
       # return rep
   return with_logging
-
+config= {
+  "addCustomFunc2":addCustomFunc2,
+}
 class Dora:
   _CUSTOMS={}
   
@@ -222,8 +224,9 @@ class Dora:
     return list(self._CUSTOMS.keys())+[i for i in super().__dir__() if not i.startswith("_")]+[i for i in super().__dir__() if  i.startswith("_")]
 
   def __getattr__(self,g):
+    print(g)
     if has_method(self,"_"+g): return getattr(self,"_"+g,None)
     if g in self._CUSTOMS:
-      return addCustomFunc2(self,self._CUSTOMS[g])
+      return config.addCustomFunc2(self,self._CUSTOMS[g])
     return object.__getattribute__(self,g)
   
