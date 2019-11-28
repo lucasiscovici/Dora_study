@@ -225,7 +225,7 @@ class Dora:
 
   def __getattr__(self,g):
     print(g)
-    print(g.__dict__)
+    print(self.__dict__)
     # if g== '_CUSTOMS':
     #   return super().__getattribute__(g)
     if has_method(self,"_"+g): return getattr(self,"_"+g,None)
