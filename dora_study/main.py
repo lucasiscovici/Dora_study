@@ -161,7 +161,7 @@ class Dora:
 #____________________PREP_____________________
   @saveLast
   def remove_feature(self, feature_name):
-    del self.data[feature_name]
+    del self._data[feature_name]
     # self._log("self.remove_feature('{0}')".format(feature_name))
 
   @saveLast
