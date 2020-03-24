@@ -119,7 +119,8 @@ class Dora:
 #____________USEFUL______________
   def input_columns(self):
     column_names = list(self._data.columns)
-    column_names.remove(self._output)
+    if hasattr(self,"_output") and self._output is not None:
+        column_names.remove(self._output)
     return column_names
 
   def set_training_and_validation(self):
