@@ -100,7 +100,7 @@ class Dora:
     fig.show()
 
   def explore(self):
-    features = self._input_columns()
+    features = self.input_columns()
     row_count = math.floor(math.sqrt(len(features)))
     col_count = math.ceil(len(features) / row_count)
     figure = plt.figure(1)
@@ -172,7 +172,7 @@ class Dora:
 
   @saveLast
   def impute_missing_values(self):
-    column_names = self._input_columns()
+    column_names = self.input_columns()
     imp = preprocessing.Imputer()
     imp.fit(self._data[column_names])
     self._data[column_names] = imp.transform(self._data[column_names])
@@ -180,7 +180,7 @@ class Dora:
 
   @saveLast
   def scale_input_values(self):
-    column_names = self.i_nput_columns()
+    column_names = self.input_columns()
     self._data[column_names] = preprocessing.scale(self._data[column_names])
     # self._log("self.scale_input_values()")
 
