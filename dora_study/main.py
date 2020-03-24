@@ -231,6 +231,6 @@ class Dora:
     #   return super().__getattribute__(g)
     if has_method(self,"_"+g): return getattr(self,"_"+g,None)
     if g in self._CUSTOMS:
-      return config.addCustomFunc2(self,self._CUSTOMS[g])
+      return config["addCustomFunc2"](self,self._CUSTOMS[g])
     return object.__getattribute__(self,g)
   
